@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"meetabs.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.13.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="关于Xilinx SDSoc的介绍我就不再复述了，我理解的也不一定准确，可以阅读官方文档了解SDSoc，你可以把它理解为一个集成开发环境 (IDE)，通过SDSoc我们能够简单快速的对Xilinx的开发板进行编程，不用像传统的嵌入式编程那样，需要配置嵌入式开发环境，交叉编译链，有时还得去移植Linux到开发板上，而这些繁琐的工作SDSoc都替你做了，相比较传统SoC设计流程，SDSoC通过自动生成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Xilinx SDSoc在Xilinx zcu102开发板上编程HelloWorld">
+<meta property="og:url" content="https://meetabs.github.io/2018/10/21/xilinx_zcu102_helloworld/index.html">
+<meta property="og:site_name" content="My Notes">
+<meta property="og:description" content="关于Xilinx SDSoc的介绍我就不再复述了，我理解的也不一定准确，可以阅读官方文档了解SDSoc，你可以把它理解为一个集成开发环境 (IDE)，通过SDSoc我们能够简单快速的对Xilinx的开发板进行编程，不用像传统的嵌入式编程那样，需要配置嵌入式开发环境，交叉编译链，有时还得去移植Linux到开发板上，而这些繁琐的工作SDSoc都替你做了，相比较传统SoC设计流程，SDSoC通过自动生成">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_01_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_02_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_03_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_04_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_05_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_06_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_07_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_08_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_09_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_10_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_11_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_12_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_13_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_14_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_15_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_16_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_17_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_18_20181021.png">
+<meta property="article:published_time" content="2018-10-21T00:00:00.000Z">
+<meta property="article:modified_time" content="2018-10-21T00:00:00.000Z">
+<meta property="article:author" content="meetabs">
+<meta property="article:tag" content="xilinx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://meetabs.github.io/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_01_20181021.png">
+
+
+<link rel="canonical" href="https://meetabs.github.io/2018/10/21/xilinx_zcu102_helloworld/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://meetabs.github.io/2018/10/21/xilinx_zcu102_helloworld/","path":"2018/10/21/xilinx_zcu102_helloworld/","title":"使用Xilinx SDSoc在Xilinx zcu102开发板上编程HelloWorld"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用Xilinx SDSoc在Xilinx zcu102开发板上编程HelloWorld | My Notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">My Notes</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Xilinx-SDx"><span class="nav-text">安装Xilinx SDx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BASDx%E5%B7%A5%E7%A8%8B"><span class="nav-text">创建SDx工程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E6%BA%90%E7%A0%81"><span class="nav-text">编写源码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%B7%A5%E7%A8%8B"><span class="nav-text">编译工程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E6%95%B4%E5%BC%80%E5%8F%91%E6%9D%BF%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F"><span class="nav-text">调整开发板启动方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%B2%E5%8F%A3"><span class="nav-text">配置串口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%A8%8B%E5%BA%8F%E9%AA%8C%E8%AF%81"><span class="nav-text">运行程序验证</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="meetabs"
+      src="/images/500px-linux-header-picture.png">
+  <p class="site-author-name" itemprop="name">meetabs</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://meetabs.github.io/2018/10/21/xilinx_zcu102_helloworld/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/500px-linux-header-picture.png">
+      <meta itemprop="name" content="meetabs">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="My Notes">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用Xilinx SDSoc在Xilinx zcu102开发板上编程HelloWorld | My Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Xilinx SDSoc在Xilinx zcu102开发板上编程HelloWorld
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-10-21 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-21T00:00:00+00:00">2018-10-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embeded/" itemprop="url" rel="index"><span itemprop="name">Embeded</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>关于Xilinx SDSoc的介绍我就不再复述了，我理解的也不一定准确，可以阅读<a target="_blank" rel="noopener" href="https://china.xilinx.com/products/design-tools/software-zone/sdsoc.html">官方文档</a>了解SDSoc，你可以把它理解为一个集成开发环境 (IDE)，通过SDSoc我们能够简单快速的对Xilinx的开发板进行编程，不用像传统的嵌入式编程那样，需要配置嵌入式开发环境，交叉编译链，有时还得去移植Linux到开发板上，而这些繁琐的工作SDSoc都替你做了，相比较传统SoC设计流程，SDSoC通过自动生成硬件连接和软件驱动程序大大简化了Zynq SoC和MPSoC的开发过程，现在开发人员不需要深层次的了解底层指令就能进行嵌入式开发，这无疑是开发人员的一大利器。</p>
+<h4 id="安装Xilinx-SDx"><a href="#安装Xilinx-SDx" class="headerlink" title="安装Xilinx SDx"></a>安装Xilinx SDx</h4><p>第一步就是安装Xilinx SDx, 我安装的是2017.4版<a target="_blank" rel="noopener" href="https://china.xilinx.com/support/download/index.html/content/xilinx/zh/downloadNav/sdx-development-environments/2017-4.html">Xilinx_SDx_2017.4_1216_1.tar.gz 点击下载</a></p>
+<img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_01_20181021.png" style="margin:0px"/>
+
+<p>解压后执行.&#x2F;xsetup就可以安装, 请注意安装目录需要有能够写入的权限（或者 sudo .&#x2F;xsetup）:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar zxvf Xilinx_SDx_2017.4_1216_1.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> Xilinx_SDx_2017.4_1216_1/</span><br><span class="line"></span><br><span class="line">./xsetup</span><br></pre></td></tr></table></figure>
+<img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_02_20181021.png" style="margin:0px"/>
+
+<p>安装完成后会弹出一个license管理的界面，选择左边的load license，选择你本地的license文件，加载好了就可以关闭了，接着进入安装时选定的安装目录（我的是： &#x2F;opt&#x2F;Xilinx）, 启动sdx:</p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><span class="line">cd  <span class="regexp">/opt/</span>Xilinx<span class="regexp">/SDx/</span><span class="number">2017.4</span>/bin</span><br><span class="line"></span><br><span class="line">./sdx</span><br></pre></td></tr></table></figure>
+<img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_03_20181021.png" style="margin:0px"/>
+
+<h4 id="创建SDx工程"><a href="#创建SDx工程" class="headerlink" title="创建SDx工程"></a>创建SDx工程</h4><p>创建一个SDx工程, SDx界面的左上角，点击File -&gt; New -&gt; SDx Project<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_04_20181021.png" style="margin:0px"/></p>
+<p>填写项目名称和工作路径<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_05_20181021.png" style="margin:0px"/></p>
+<p>选择开发板型号，我这里是zcu102<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_06_20181021.png" style="margin:0px"/></p>
+<p>这一页的属性不用修改,默认就可以<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_07_20181021.png" style="margin:0px"/></p>
+<p>选择工程的类型，xinlinx给出了一些模板，这里选择Empty Applicaton，点击finish完成。<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_08_20181021.png" style="margin:0px"/></p>
+<h4 id="编写源码"><a href="#编写源码" class="headerlink" title="编写源码"></a>编写源码</h4><p>为我们的程序添加一个源代码文件，左边的project视图里面，鼠标移动到src的目录上点击右键New -&gt; File<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_09_20181021.png" style="margin:0px"/></p>
+<p>在helloworld.cpp里面写上那段延续了几十年的古老的代码:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;Hello World from Xilinx zcu102.&quot;</span> &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_10_20181021.png" style="margin:0px"/>
+
+<h4 id="编译工程"><a href="#编译工程" class="headerlink" title="编译工程"></a>编译工程</h4><p> 编译源代码，点击SDx上方的build图标，图标旁边的三角形可以下拉选择Debug&#x2F;Release，我这里选择的Release<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_11_20181021.png" style="margin:0px"/><br>build完成后project视图会多出来一个Release的文件夹(若果你选择的Debug，那就会多出来一个Debug的文件夹)。我们需要把sd_card文件夹里面的所有文件全部复制到sd卡上(事先格式化为fat32格式)<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_12_20181021.png" style="margin:0px"/></p>
+<p>现在sd卡里面的文件是这样的<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_13_20181021.png" style="margin:0px"/></p>
+<h4 id="调整开发板启动方式"><a href="#调整开发板启动方式" class="headerlink" title="调整开发板启动方式"></a>调整开发板启动方式</h4><p>设置zcu102从sd卡启动，这里可以参考zcu102的快速指南手册，主要就是SW6的4个开关一定要拨正确<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_14_20181021.png" style="margin:0px"/><br>来张特写<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_15_20181021.png" style="margin:0px"/></p>
+<h4 id="配置串口"><a href="#配置串口" class="headerlink" title="配置串口"></a>配置串口</h4><p>连接上串口，串口线和android数据线一样的那两根都连接到电脑就可以了，其中靠近网卡的那根就是串口，如果分不清楚就都连上电脑，电脑上打开串口工具，我用的SecureCRT，linux下一定要注意用sudo 权限打开，win7下不用。</p>
+<p>图中的 &#x2F;dev&#x2F;ttyUSB0 可能数字 0 会和你的不一致，你可以逐个试一下，其他参数分别为Serial , 115200 ,  8 ,  none  , 1  都是下拉选择的，应该不会选错。<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_16_20181021.png" style="margin:0px"/></p>
+<p>这样就能看到启动信息了，在串口通信的终端打印出来的<br><img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_17_20181021.png" style="margin:0px"/></p>
+<h4 id="运行程序验证"><a href="#运行程序验证" class="headerlink" title="运行程序验证"></a>运行程序验证</h4><p>运行我们的程序，默认情况下你的sd卡会被挂载到&#x2F;mnt 目录，所以进入&#x2F;mnt目录就可以执行我们生成的firstSDXProject.elf文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /mnt</span><br><span class="line"></span><br><span class="line"><span class="built_in">ls</span> -l</span><br><span class="line"></span><br><span class="line">./firstSDXProject.elf</span><br></pre></td></tr></table></figure>
+<img src="/images/xilinx_zcu102_helloworld/xilinx_zcu102_helloworld_18_20181021.png" style="margin:0px"/>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/xilinx/" rel="tag"># xilinx</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/10/16/compile_arm_helloworld/" rel="prev" title="编译出arm Android环境下的C++可执行文件">
+                  <i class="fa fa-chevron-left"></i> 编译出arm Android环境下的C++可执行文件
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/10/21/xilinx_sdsoc_load_opencv/" rel="next" title="Xilinx SDSoc 加载opencv库">
+                  Xilinx SDSoc 加载opencv库 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa-solid fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">meetabs</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

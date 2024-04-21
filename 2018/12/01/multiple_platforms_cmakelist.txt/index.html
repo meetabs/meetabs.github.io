@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"meetabs.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.13.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="有时候你需要把一份代码分别编译到不同的平台运行, 比如我经常需要编译出xilinx zcu102开发板能够运行的程序, 也希望能够编译出一个x86的版本, 这就需要编写能够适用于多个平台的CMakeLists.txt, 可以根据传入的参数生成不同的版本。这方面的教程很多，我也没来得及深入研究cmake的跨平台CMakeLists.txt, 这里我只写出一个我能够使用的例子, 当做是记录方便以后查看">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编写适用于多个平台的CMakeLists.txt">
+<meta property="og:url" content="https://meetabs.github.io/2018/12/01/multiple_platforms_cmakelist.txt/index.html">
+<meta property="og:site_name" content="My Notes">
+<meta property="og:description" content="有时候你需要把一份代码分别编译到不同的平台运行, 比如我经常需要编译出xilinx zcu102开发板能够运行的程序, 也希望能够编译出一个x86的版本, 这就需要编写能够适用于多个平台的CMakeLists.txt, 可以根据传入的参数生成不同的版本。这方面的教程很多，我也没来得及深入研究cmake的跨平台CMakeLists.txt, 这里我只写出一个我能够使用的例子, 当做是记录方便以后查看">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-12-01T00:00:00.000Z">
+<meta property="article:modified_time" content="2018-12-01T00:00:00.000Z">
+<meta property="article:author" content="meetabs">
+<meta property="article:tag" content="cmake">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://meetabs.github.io/2018/12/01/multiple_platforms_cmakelist.txt/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://meetabs.github.io/2018/12/01/multiple_platforms_cmakelist.txt/","path":"2018/12/01/multiple_platforms_cmakelist.txt/","title":"编写适用于多个平台的CMakeLists.txt"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>编写适用于多个平台的CMakeLists.txt | My Notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">My Notes</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="meetabs"
+      src="/images/500px-linux-header-picture.png">
+  <p class="site-author-name" itemprop="name">meetabs</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://meetabs.github.io/2018/12/01/multiple_platforms_cmakelist.txt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/500px-linux-header-picture.png">
+      <meta itemprop="name" content="meetabs">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="My Notes">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="编写适用于多个平台的CMakeLists.txt | My Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          编写适用于多个平台的CMakeLists.txt
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-12-01 00:00:00" itemprop="dateCreated datePublished" datetime="2018-12-01T00:00:00+00:00">2018-12-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embeded/" itemprop="url" rel="index"><span itemprop="name">Embeded</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>有时候你需要把一份代码分别编译到不同的平台运行, 比如我经常需要编译出xilinx zcu102开发板能够运行的程序, 也希望能够编译出一个x86的版本, 这就需要编写能够适用于多个平台的CMakeLists.txt, 可以根据传入的参数生成不同的版本。这方面的教程很多，我也没来得及深入研究cmake的跨平台CMakeLists.txt, 这里我只写出一个我能够使用的例子, 当做是记录方便以后查看。</p>
+<figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(ArmControlSystem)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(target armcontrolsystem)</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>(source_file_list</span><br><span class="line">        fpga_net<span class="selector-class">.cpp</span></span><br><span class="line">        fpga_keypoint<span class="selector-class">.cpp</span></span><br><span class="line">        fpga_feature<span class="selector-class">.cpp</span></span><br><span class="line">        fpga_resource<span class="selector-class">.cpp</span></span><br><span class="line">        read_config<span class="selector-class">.cpp</span></span><br><span class="line">        signal_control<span class="selector-class">.cpp</span></span><br><span class="line">        socket<span class="selector-class">.cpp</span></span><br><span class="line">        timer.cpp)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">option</span><span class="params">(PLATFORM <span class="string">&quot;arm64 or x86_64&quot;</span> arm64)</span></span></span><br><span class="line"><span class="keyword">if</span> ($&#123;PLATFORM&#125; STREQUAL <span class="string">&quot;arm64&quot;</span>)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_SYSTEM_NAME Linux)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_FIND_ROOT_PATH <span class="string">&quot;/data/Xilinx/zcu102_rv_ss/sw/sysroot&quot;</span>)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_C_COMPILER <span class="string">&quot;/data/Xilinx/SDK/2017.4/gnu/aarch64/lin/aarch64-linux/bin/aarch64-linux-gnu-gcc&quot;</span>)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_CXX_COMPILER <span class="string">&quot;/data/Xilinx/SDK/2017.4/gnu/aarch64/lin/aarch64-linux/bin/aarch64-linux-gnu-g++&quot;</span>)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_BUILD_TYPE <span class="string">&quot;Release&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">include_directories</span>($&#123;CMAKE_FIND_ROOT_PATH&#125;/usr/include $&#123;CMAKE_FIND_ROOT_PATH&#125;/usr/include/eigen3)</span><br><span class="line">elseif ($&#123;PLATFORM&#125; STREQUAL <span class="string">&quot;x86_64&quot;</span>)</span><br><span class="line">    <span class="built_in">SET</span>(CMAKE_BUILD_TYPE <span class="string">&quot;Debug&quot;</span>)</span><br><span class="line">    <span class="built_in">set</span>(CMAKE_CXX_FLAGS <span class="string">&quot;-g&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">find_package</span>(OpenCV REQUIRED)</span><br><span class="line">    <span class="built_in">include_directories</span>($&#123;OpenCV_INCLUDE_DIRS&#125;)</span><br><span class="line">endif ()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(install_root_dir /data/for_xilinx_zcu102/armcontrolsystem/$&#123;PLATFORM&#125;)</span></span></span><br><span class="line"><span class="function"><span class="title">add_library</span><span class="params">($&#123;target&#125; SHARED $&#123;source_file_list&#125;)</span></span></span><br><span class="line"><span class="function"><span class="title">install</span><span class="params">(TARGETS $&#123;target&#125; LIBRARY DESTINATION $&#123;install_root_dir&#125;/lib)</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">install</span>(FILES</span><br><span class="line">        fpga_net<span class="selector-class">.h</span></span><br><span class="line">        fpga_keypoint<span class="selector-class">.h</span></span><br><span class="line">        fpga_feature<span class="selector-class">.h</span></span><br><span class="line">        fpga_resource<span class="selector-class">.h</span></span><br><span class="line">        read_config<span class="selector-class">.h</span></span><br><span class="line">        signal_control<span class="selector-class">.h</span></span><br><span class="line">        socket<span class="selector-class">.h</span></span><br><span class="line">        timer<span class="selector-class">.h</span></span><br><span class="line">        DESTINATION $&#123;install_root_dir&#125;/include)</span><br></pre></td></tr></table></figure>
+
+<p>通过传入PLATFORM变量来确定目标平台, 编译出不同的版本。</p>
+<figure class="highlight vim"><table><tr><td class="code"><pre><span class="line">arm64:  cmake -DPLATFORM=arm64 .. &amp;&amp; <span class="keyword">make</span><span class="comment">&quot;</span></span><br><span class="line">x86_64: cmake -DPLATFORM=x86_64 .. &amp;&amp; <span class="keyword">make</span><span class="comment">&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cmake/" rel="tag"># cmake</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/11/30/arm_float_martix_multi/" rel="prev" title="neon指令集加速arm架构下的浮点型矩阵乘法 ">
+                  <i class="fa fa-chevron-left"></i> neon指令集加速arm架构下的浮点型矩阵乘法 
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/01/clean_opencv_videocapture_buffer/" rel="next" title="清空opencv里面VideoCapture采集图像的缓冲区">
+                  清空opencv里面VideoCapture采集图像的缓冲区 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa-solid fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">meetabs</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"meetabs.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.13.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="ssh协议可以转发X11数据, 从而达到使用远程gui程序的功能, 现在有 　　客服端C ：192.168.0.13 　　服务器S ：192.168.0.200 首先确保在客服端C 上能够通过 ssh &amp;#x73;&amp;#97;&amp;#x6b;&amp;#117;&amp;#114;&amp;#x61;&amp;#x67;&amp;#x6c;&amp;#64;&amp;#x31;&amp;#57;&amp;#x32;&amp;#x2e;&amp;#x31;&amp;#54;&amp;#56;&amp;#x2e;&amp;#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过ssh X11转发使用远程gui程序">
+<meta property="og:url" content="https://meetabs.github.io/2018/10/28/ssh_remote_x11/index.html">
+<meta property="og:site_name" content="My Notes">
+<meta property="og:description" content="ssh协议可以转发X11数据, 从而达到使用远程gui程序的功能, 现在有 　　客服端C ：192.168.0.13 　　服务器S ：192.168.0.200 首先确保在客服端C 上能够通过 ssh &amp;#x73;&amp;#97;&amp;#x6b;&amp;#117;&amp;#114;&amp;#x61;&amp;#x67;&amp;#x6c;&amp;#64;&amp;#x31;&amp;#57;&amp;#x32;&amp;#x2e;&amp;#x31;&amp;#54;&amp;#56;&amp;#x2e;&amp;#">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://meetabs.github.io/images/ssh_remote_x11/ssh_remote_x11_01_20181028.png">
+<meta property="article:published_time" content="2018-10-28T00:00:00.000Z">
+<meta property="article:modified_time" content="2018-10-28T00:00:00.000Z">
+<meta property="article:author" content="meetabs">
+<meta property="article:tag" content="X11">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://meetabs.github.io/images/ssh_remote_x11/ssh_remote_x11_01_20181028.png">
+
+
+<link rel="canonical" href="https://meetabs.github.io/2018/10/28/ssh_remote_x11/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://meetabs.github.io/2018/10/28/ssh_remote_x11/","path":"2018/10/28/ssh_remote_x11/","title":"通过ssh X11转发使用远程gui程序"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>通过ssh X11转发使用远程gui程序 | My Notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">My Notes</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="meetabs"
+      src="/images/500px-linux-header-picture.png">
+  <p class="site-author-name" itemprop="name">meetabs</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://meetabs.github.io/2018/10/28/ssh_remote_x11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/500px-linux-header-picture.png">
+      <meta itemprop="name" content="meetabs">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="My Notes">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="通过ssh X11转发使用远程gui程序 | My Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          通过ssh X11转发使用远程gui程序
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-10-28 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-28T00:00:00+00:00">2018-10-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>ssh协议可以转发X11数据, 从而达到使用远程gui程序的功能, 现在有</p>
+<p>　　客服端C ：192.168.0.13</p>
+<p>　　服务器S ：192.168.0.200</p>
+<p>首先确保在客服端C 上能够通过 ssh <a href="mailto:&#x73;&#97;&#x6b;&#117;&#114;&#x61;&#x67;&#x6c;&#64;&#x31;&#57;&#x32;&#x2e;&#x31;&#54;&#56;&#x2e;&#x30;&#46;&#50;&#x30;&#x30;">&#x73;&#97;&#x6b;&#117;&#114;&#x61;&#x67;&#x6c;&#64;&#x31;&#57;&#x32;&#x2e;&#x31;&#54;&#56;&#x2e;&#x30;&#46;&#50;&#x30;&#x30;</a> 连接到服务器S, 如果需要使用远程的gui程序，需要在服务器和客服端上分别做以下配置：</p>
+<p>1、服务器： sudo vim &#x2F;etc&#x2F;ssh&#x2F;sshd_config 修改以下配置，如果在配置文件里面没有找到，就直接添加到文件末尾即可，最后保存退出:wq</p>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">X11Forwarding</span> <span class="literal">yes</span></span><br><span class="line"></span><br><span class="line">X11DisplayOffset <span class="number">10</span></span><br><span class="line"></span><br><span class="line">X11UseLocalhost <span class="literal">yes</span></span><br></pre></td></tr></table></figure>
+<p>服务器端修改完成后需要执行命令重启sshd服务 </p>
+<figure class="highlight maxima"><table><tr><td class="code"><pre><span class="line">sudo systemctl <span class="built_in">restart</span> sshd.service</span><br></pre></td></tr></table></figure>
+
+<p>2.客服端：sudo vim &#x2F;etc&#x2F;ssh&#x2F;ssh_config  同理修改以下配置，保存退出。</p>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">ForwardAgent</span> <span class="literal">yes</span></span><br><span class="line"></span><br><span class="line">ForwardX11 <span class="literal">yes</span></span><br><span class="line"></span><br><span class="line">ForwardX11Trusted <span class="literal">yes</span></span><br></pre></td></tr></table></figure>
+<p>客服端修改完成后也需要执行对应的命令重启ssh服务</p>
+<figure class="highlight maxima"><table><tr><td class="code"><pre><span class="line">sudo systemctl <span class="built_in">restart</span> ssh.service</span><br></pre></td></tr></table></figure>
+<p>3、配置已经修改完了，现在开始连接测试，在客服端C 上执行命令:</p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><span class="line">xhost +　　<span class="regexp">//</span>允许服务器的的x11界面连接过来</span><br><span class="line"></span><br><span class="line">ssh -X sakuragl@<span class="number">192.168</span>.<span class="number">0.200</span>　　　　　　<span class="regexp">//</span>-X参数表示转发X11数据， 把用户名称sakuragl以及服务器S的ip地址替换为你自己的</span><br></pre></td></tr></table></figure>
+
+<p>现在你已经登陆了服务器，而且还有一个终端是连接的状态，和平时ssh连接没有什么区别，除了会转发X11的数据，你可以在终端里面用命令运行你想要运行的gui程序比如：firefox , google-chrome , xclock</p>
+<p>现在我以xclock为例演示一下, xclock程序会显示一个图形时钟</p>
+<figure class="highlight ebnf"><table><tr><td class="code"><pre><span class="line"><span class="attribute">xclock</span></span><br></pre></td></tr></table></figure>
+<p>现在可以在客服端C 的桌面上看到服务器S 的xclock了，如下图：<br><img src="/images/ssh_remote_x11/ssh_remote_x11_01_20181028.png" style="margin:0px"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/X11/" rel="tag"># X11</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/10/26/cmake_crosscompile/" rel="prev" title="cmake 交叉编译">
+                  <i class="fa fa-chevron-left"></i> cmake 交叉编译
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/10/28/ncnn_add_own_layer/" rel="next" title="ncnn添加自己的layer">
+                  ncnn添加自己的layer <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa-solid fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">meetabs</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

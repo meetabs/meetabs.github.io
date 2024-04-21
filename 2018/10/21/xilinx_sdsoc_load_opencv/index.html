@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"meetabs.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.13.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Xilinx SDSoc 加载opencv库需要下载两个文件 xfopencv 和 Revision Platform， Revision Platform需要和具体的开发板型号对应，我用的是zcu102开发板。 1.xfopencv :  github地址 https:&#x2F;&#x2F;github.com&#x2F;Xilinx&#x2F;xfopencv2.revision platform :  https:&#x2F;&#x2F;www.x">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xilinx SDSoc 加载opencv库">
+<meta property="og:url" content="https://meetabs.github.io/2018/10/21/xilinx_sdsoc_load_opencv/index.html">
+<meta property="og:site_name" content="My Notes">
+<meta property="og:description" content="Xilinx SDSoc 加载opencv库需要下载两个文件 xfopencv 和 Revision Platform， Revision Platform需要和具体的开发板型号对应，我用的是zcu102开发板。 1.xfopencv :  github地址 https:&#x2F;&#x2F;github.com&#x2F;Xilinx&#x2F;xfopencv2.revision platform :  https:&#x2F;&#x2F;www.x">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_01_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_02_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_03_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_04_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_05_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_06_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_07_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_08_20181021.png">
+<meta property="og:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_09_20181021.png">
+<meta property="article:published_time" content="2018-10-21T00:00:00.000Z">
+<meta property="article:modified_time" content="2018-10-21T00:00:00.000Z">
+<meta property="article:author" content="meetabs">
+<meta property="article:tag" content="xilinx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://meetabs.github.io/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_01_20181021.png">
+
+
+<link rel="canonical" href="https://meetabs.github.io/2018/10/21/xilinx_sdsoc_load_opencv/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://meetabs.github.io/2018/10/21/xilinx_sdsoc_load_opencv/","path":"2018/10/21/xilinx_sdsoc_load_opencv/","title":"Xilinx SDSoc 加载opencv库"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Xilinx SDSoc 加载opencv库 | My Notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">My Notes</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="meetabs"
+      src="/images/500px-linux-header-picture.png">
+  <p class="site-author-name" itemprop="name">meetabs</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://meetabs.github.io/2018/10/21/xilinx_sdsoc_load_opencv/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/500px-linux-header-picture.png">
+      <meta itemprop="name" content="meetabs">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="My Notes">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Xilinx SDSoc 加载opencv库 | My Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Xilinx SDSoc 加载opencv库
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-10-21 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-21T00:00:00+00:00">2018-10-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embeded/" itemprop="url" rel="index"><span itemprop="name">Embeded</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Xilinx SDSoc 加载opencv库需要下载两个文件 xfopencv 和 Revision Platform， Revision Platform需要和具体的开发板型号对应，我用的是zcu102开发板。</p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span>.xfopencv :  github地址 https:<span class="regexp">//gi</span>thub.com<span class="regexp">/Xilinx/</span>xfopencv</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>.revision platform :  https:<span class="regexp">//</span>www.xilinx.com<span class="regexp">/member/</span>forms<span class="regexp">/download/</span>design-license-xef.html?akdm=<span class="number">1</span>&amp;filename=zcu102-rv-ss-<span class="number">2017</span>-<span class="number">4</span>.zip</span><br></pre></td></tr></table></figure>
+
+<p>A. xfopencv下载好了以后放在 ~&#x2F;.Xilinx&#x2F;SDx&#x2F;2017.4 目录(2017.4请修改为你的实际版本号)</p>
+<p>B. Revision Platform下载后解压到&#x2F;opt目录</p>
+<img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_01_20181021.png" style="margin:0px"/>
+
+
+<img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_02_20181021.png" style="margin:0px"/>
+
+<p>启动SDx 按照<a target="_blank" rel="noopener" href="https://www.sakuragl.com/2018/10/21/xilinx_zcu102_helloworld/">上一篇文章</a>里面的步骤创建一个项目zcu102client，选中创建的项目，鼠标点击菜单栏的Xilinx 选中SDx Liraries</p>
+<img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_03_20181021.png" style="margin:0px"/>
+
+<p>展开Xilinx xfopencv Library , 双击然后选择下面的Add to Project 会让你选择添加到哪个Project，点击ok完成添加。<br><img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_04_20181021.png" style="margin:0px"/></p>
+<p>添加完成后在选中创建的项目，点击Properties，可以看到Libraries下面多出来的就是上一步中SDx IDE自动为我们添加的opencv库。<br><img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_05_20181021.png" style="margin:0px"/></p>
+<p>这里可以把你用不到的库都删除掉，比如我就只用到了opencv_core opencv_videoio opencv_imgcodecs<br><img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_06_20181021.png" style="margin:0px"/></p>
+<p>最后还需要设置一个变量SYSROOT，设置为Revision Platform解压后的路径下的sw&#x2F;sysroot (需要勾选show system variables才可以看到这个变量)， 如下图:<br><img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_07_20181021.png" style="margin:0px"/></p>
+<img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_08_20181021.png" style="margin:0px"/>
+
+<p>修改完成后点击菜单栏的build就可以编译代码了。</p>
+<p><strong>下面总结一下build过程中遇到的几个问题，希望能给大家一个参考:</strong></p>
+<p>&#x2F;opt&#x2F;Xilinx&#x2F;SDK&#x2F;2017.4&#x2F;gnu&#x2F;aarch64&#x2F;lin&#x2F;aarch64-linux&#x2F;bin&#x2F;..&#x2F;lib&#x2F;gcc&#x2F;aarch64-linux-gnu&#x2F;6.2.1&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;aarch64-linux-gnu&#x2F;bin&#x2F;ld: cannot find crt1.o<br>&#x2F;opt&#x2F;Xilinx&#x2F;SDK&#x2F;2017.4&#x2F;gnu&#x2F;aarch64&#x2F;lin&#x2F;aarch64-linux&#x2F;bin&#x2F;..&#x2F;lib&#x2F;gcc&#x2F;aarch64-linux-gnu&#x2F;6.2.1&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;aarch64-linux-gnu&#x2F;bin&#x2F;ld: cannot find crti.o<br>&#x2F;opt&#x2F;Xilinx&#x2F;SDK&#x2F;2017.4&#x2F;gnu&#x2F;aarch64&#x2F;lin&#x2F;aarch64-linux&#x2F;bin&#x2F;..&#x2F;lib&#x2F;gcc&#x2F;aarch64-linux-gnu&#x2F;6.2.1&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;aarch64-linux-gnu&#x2F;bin&#x2F;ld: cannot find crtn.o: No such file or directory<br>collect2: error: ld returned 1 exit status</p>
+<p><strong>分析：关注到这里报错的ld程序所在的bin路径，进入同级目录的lib目录,发现确实没有该文件，通过find &#x2F;opt&#x2F;zcu102_rv_ss&#x2F; -name “crt1.o” 又发现有这个文件存在，所以我们建立一个软连接即可:</strong></p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><span class="line">cd <span class="regexp">/opt/</span>Xilinx<span class="regexp">/SDK/</span><span class="number">2017.4</span><span class="regexp">/gnu/</span>aarch64<span class="regexp">/lin/</span>aarch64-linux<span class="regexp">/bin/</span>..<span class="regexp">/lib/g</span>cc<span class="regexp">/aarch64-linux-gnu/</span><span class="number">6.2</span>.<span class="number">1</span><span class="regexp">/../</span>..<span class="regexp">/../</span>..<span class="regexp">/aarch64-linux-gnu/</span>bin</span><br><span class="line"></span><br><span class="line">cd ../lib</span><br><span class="line"></span><br><span class="line">sudo ln -s <span class="regexp">/opt/</span>zcu102_rv_ss<span class="regexp">/sw/</span>sysroot<span class="regexp">/usr/</span>lib<span class="regexp">/crt1.o ./</span>crt1.o</span><br><span class="line">sudo ln -s <span class="regexp">/opt/</span>zcu102_rv_ss<span class="regexp">/sw/</span>sysroot<span class="regexp">/usr/</span>lib<span class="regexp">/crti.o ./</span>crti.o</span><br><span class="line">sudo ln -s <span class="regexp">/opt/</span>zcu102_rv_ss<span class="regexp">/sw/</span>sysroot<span class="regexp">/usr/</span>lib<span class="regexp">/crtn.o ./</span>crtn.o</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;opt&#x2F;Xilinx&#x2F;SDK&#x2F;2017.4&#x2F;gnu&#x2F;aarch64&#x2F;lin&#x2F;aarch64-linux&#x2F;bin&#x2F;..&#x2F;lib&#x2F;gcc&#x2F;aarch64-linux-gnu&#x2F;6.2.1&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;aarch64-linux-gnu&#x2F;bin&#x2F;ld: cannot find &#x2F;lib&#x2F;libpthread.so.0<br>&#x2F;opt&#x2F;Xilinx&#x2F;SDK&#x2F;2017.4&#x2F;gnu&#x2F;aarch64&#x2F;lin&#x2F;aarch64-linux&#x2F;bin&#x2F;..&#x2F;lib&#x2F;gcc&#x2F;aarch64-linux-gnu&#x2F;6.2.1&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;aarch64-linux-gnu&#x2F;bin&#x2F;ld: cannot find &#x2F;usr&#x2F;lib&#x2F;libpthread_nonshared.a<br>collect2: error: ld returned 1 exit status</p>
+<p><strong>分析：这个错误和上一个不同的是错误信息里面点名道姓的指定了绝对路径下文件找不到，但是用find命令查找的时候发现&#x2F;opt&#x2F;zcu102_rv_ss&#x2F;sw&#x2F;sysroot下面有&#x2F;opt&#x2F;zcu102_rv_ss&#x2F;sw&#x2F;sysroot&#x2F;usr&#x2F;lib&#x2F;libpthread.so这个文件，由于xilinx SDx 都是调用静态链接库？动态链接库一般会指向静态链接库，所以用vim打开：</strong></p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><span class="line">sudo vim <span class="regexp">/opt/</span>zcu102_rv_ss<span class="regexp">/sw/</span>sysroot<span class="regexp">/usr/</span>lib/libpthread.so</span><br></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* GNU ld script</span></span><br><span class="line"><span class="comment">   Use the shared library, but some functions are only in</span></span><br><span class="line"><span class="comment">   the static library, so try that secondarily.  */</span></span><br><span class="line"><span class="function"><span class="title">OUTPUT_FORMAT</span><span class="params">(elf64-littleaarch64)</span></span></span><br><span class="line">GROUP ( /lib/libpthread<span class="selector-class">.so</span>.<span class="number">0</span> /usr/lib/libpthread_nonshared<span class="selector-class">.a</span> )</span><br><span class="line"></span><br><span class="line">这里就看出了端倪，果然是被指定了绝对路径，把绝对路径去掉，像这样：</span><br><span class="line">GROUP ( libpthread<span class="selector-class">.so</span>.<span class="number">0</span> libpthread_nonshared<span class="selector-class">.a</span> )</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;opt&#x2F;Xilinx&#x2F;SDK&#x2F;2017.4&#x2F;gnu&#x2F;aarch64&#x2F;lin&#x2F;aarch64-linux&#x2F;bin&#x2F;..&#x2F;lib&#x2F;gcc&#x2F;aarch64-linux-gnu&#x2F;6.2.1&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;aarch64-linux-gnu&#x2F;bin&#x2F;ld: cannot find libpthread.so.0<br>collect2: error: ld returned 1 exit status</p>
+<p><strong>分析：还记得crt1.o  crti.o  crtn.o 吗， 完全一样的错误信息，我这里为了防止类似的错误继续发生，而且可以看到</strong></p>
+<p>&#x2F;opt&#x2F;Xilinx&#x2F;SDK&#x2F;2017.4&#x2F;gnu&#x2F;aarch64&#x2F;lin&#x2F;aarch64-linux&#x2F;bin&#x2F;..&#x2F;lib&#x2F;gcc&#x2F;aarch64-linux-gnu&#x2F;6.2.1&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;aarch64-linux-gnu&#x2F;lib    本身是一个空目录，所以索性直接做了两个目录的软连接:</p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><span class="line">cd <span class="regexp">/opt/</span>Xilinx<span class="regexp">/SDK/</span><span class="number">2017.4</span><span class="regexp">/gnu/</span>aarch64<span class="regexp">/lin/</span>aarch64-linux<span class="regexp">/bin/</span>..<span class="regexp">/lib/g</span>cc<span class="regexp">/aarch64-linux-gnu/</span><span class="number">6.2</span>.<span class="number">1</span><span class="regexp">/../</span>..<span class="regexp">/../</span>..<span class="regexp">/aarch64-linux-gnu/</span>bin</span><br><span class="line"></span><br><span class="line">cd ../lib</span><br><span class="line"></span><br><span class="line">sudo ln -sf <span class="regexp">/opt/</span>zcu102_rv_ss<span class="regexp">/sw/</span>sysroot<span class="regexp">/lib/</span> .</span><br><span class="line">sudo ln -sf <span class="regexp">/opt/</span>zcu102_rv_ss<span class="regexp">/sw/</span>sysroot<span class="regexp">/usr/</span> .</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;opt&#x2F;zcu102_rv_ss&#x2F;sw&#x2F;sysroot&#x2F;usr&#x2F;include&#x2F;opencv2&#x2F;core&#x2F;cvdef.h  error: unknown type name ‘float32x2_t’<br>&#x2F;opt&#x2F;zcu102_rv_ss&#x2F;sw&#x2F;sysroot&#x2F;usr&#x2F;include&#x2F;opencv2&#x2F;core&#x2F;cvdef.h  error: unknown type name ‘uint32_t’<br>……. (略过一大堆类似的未知类型)</p>
+<p><strong>分析：打开报错的头文件&#x2F;opt&#x2F;zcu102_rv_ss&#x2F;sw&#x2F;sysroot&#x2F;usr&#x2F;include&#x2F;opencv2&#x2F;core&#x2F;cvdef.h 发现未知的类型是条件定义在一个CV_NEON宏下面的，也就是说CV_NEON &#x3D; 1的时候就会报错，所以我把CV_NEON宏全部定义为了0</strong></p>
+<img src="/images/xilinx_sdsoc_load_opencv/xilinx_sdsoc_load_opencv_09_20181021.png" style="margin:0px"/>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/xilinx/" rel="tag"># xilinx</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/10/21/xilinx_zcu102_helloworld/" rel="prev" title="使用Xilinx SDSoc在Xilinx zcu102开发板上编程HelloWorld">
+                  <i class="fa fa-chevron-left"></i> 使用Xilinx SDSoc在Xilinx zcu102开发板上编程HelloWorld
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/10/26/kms_active_server/" rel="next" title="kms服务器">
+                  kms服务器 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa-solid fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">meetabs</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
